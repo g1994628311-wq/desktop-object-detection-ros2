@@ -8,6 +8,7 @@ __pycache__/
 venv/
 env/
 .env/
+.ultralytics/
 
 # ==============================
 # IDE
@@ -63,5 +64,6 @@ ros2_ws/install/
 ros2_ws/log/
 
 data/previews/
+results/yolo11n_baseline_v1/predictions/
 
 data/labels_backup_*/

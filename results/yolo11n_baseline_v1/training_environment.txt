@@ -1,0 +1,20 @@
+date_started: 2026-08-28T23:37:24.637972+08:00
+date_ended: 2026-08-28T23:40:08.061677+08:00
+Python version: 3.12.13
+PyTorch version: 2.13.0+cu130
+CUDA version: 13.0
+Ultralytics version: 8.4.131
+GPU: NVIDIA GeForce RTX 4060 Laptop GPU
+driver: 591.74
+training image size: 640
+batch size: 16
+epochs requested: 100
+epochs completed: 73
+best epoch: 54
+early stopping: True
+seed: 42
+training duration seconds: 128.192
+total train/evaluate/predict pipeline seconds: 163.424
+run directory: D:\codes\desktop-object-detection-ros2\runs\detect\yolo11n_baseline_v1_2
+best.pt: D:\codes\desktop-object-detection-ros2\runs\detect\yolo11n_baseline_v1_2\weights\best.pt
+last.pt: D:\codes\desktop-object-detection-ros2\runs\detect\yolo11n_baseline_v1_2\weights\last.pt
