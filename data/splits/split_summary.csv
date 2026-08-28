@@ -1,0 +1,6 @@
+split,contributor,session,image_count,object_count,mouse_count,keyboard_count,laptop_count,cup_count,headphones_count,negative_count
+train,P01,S01,21,27,5,1,5,10,6,0
+train,P01,S02,20,36,10,2,9,11,4,0
+train,P01,S05,6,0,0,0,0,0,0,6
+val,P01,S03,23,47,12,7,6,11,11,0
+test,P01,S04,17,58,15,8,12,13,10,0

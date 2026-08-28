@@ -1,0 +1,17 @@
+data/raw/P01/S04/P01_S04_KEY_0001.jpg
+data/raw/P01/S04/P01_S04_MIX_0003.jpg
+data/raw/P01/S04/P01_S04_MIX_0004.jpg
+data/raw/P01/S04/P01_S04_MIX_0005.jpg
+data/raw/P01/S04/P01_S04_MIX_0006.jpg
+data/raw/P01/S04/P01_S04_MIX_0007.jpg
+data/raw/P01/S04/P01_S04_MIX_0008.jpg
+data/raw/P01/S04/P01_S04_MIX_0009.jpg
+data/raw/P01/S04/P01_S04_MIX_0010.jpg
+data/raw/P01/S04/P01_S04_MIX_0011.jpg
+data/raw/P01/S04/P01_S04_MIX_0012.jpg
+data/raw/P01/S04/P01_S04_MIX_0013.jpg
+data/raw/P01/S04/P01_S04_MIX_0014.jpg
+data/raw/P01/S04/P01_S04_MIX_0015.jpg
+data/raw/P01/S04/P01_S04_MIX_0016.jpg
+data/raw/P01/S04/P01_S04_MIX_0017.jpg
+data/raw/P01/S04/P01_S04_MOU_0002.jpg

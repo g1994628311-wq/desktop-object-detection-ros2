@@ -2,6 +2,12 @@
 
 This project implements a real-time desktop object detection system using YOLO on NVIDIA Jetson and publishes detection results through ROS2.
 
+## Dataset status
+
+The current P01 collection has 87 manually annotated images and 168 instances. Canonical labels are in `data/labels/`; session-grouped manifests are in `data/splits/`.
+
+Run `python scripts/validate_labels.py` and `python scripts/build_yolo_dataset.py` to validate and rebuild the local YOLO dataset. See `docs/annotation_guidelines.md` and `docs/dataset_summary.md`. Training and deployment are outside the current phase.
+
 ## Target Classes
 
 | ID | Class |

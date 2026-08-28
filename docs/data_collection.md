@@ -1,5 +1,9 @@
 ﻿# Data Collection and Annotation Guide
 
+## Current collection status
+
+The repository currently contains 87 images from P01: S01 21, S02 20, S03 23, S04 17, and S05 6. P02-P05 directories contain no images and are not counted. The approximate counts below describe the original collection target, not the current inventory. Formal annotation rules are in `docs/annotation_guidelines.md`.
+
 ## Object Classes
 
 0. mouse
