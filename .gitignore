@@ -1,0 +1,61 @@
+﻿# ==============================
+# Python
+# ==============================
+__pycache__/
+*.py[cod]
+*.pyd
+.venv/
+venv/
+env/
+.env/
+
+# ==============================
+# IDE
+# ==============================
+.vscode/
+.idea/
+
+# ==============================
+# Dataset images
+# Large datasets are stored separately
+# ==============================
+data/raw/
+data/annotated/
+data/yolo_dataset/images/
+data/yolo_dataset/labels/
+
+# ==============================
+# YOLO training outputs
+# ==============================
+runs/
+
+# ==============================
+# Model weights / TensorRT
+# ==============================
+*.pt
+*.pth
+*.onnx
+*.engine
+
+# ==============================
+# Videos
+# ==============================
+*.mp4
+*.avi
+*.mov
+*.mkv
+
+# ==============================
+# Temporary files
+# ==============================
+*.tmp
+*.log
+.DS_Store
+Thumbs.db
+
+# ==============================
+# ROS2 build outputs
+# ==============================
+ros2_ws/build/
+ros2_ws/install/
+ros2_ws/log/
