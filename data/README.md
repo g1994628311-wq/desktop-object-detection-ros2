@@ -46,3 +46,7 @@ Examples:
 Large raw and annotated image files are excluded from normal Git tracking.
 
 The final submission dataset will be packaged separately.
+## P01 versions
+
+`v1/` archives the original baseline metadata.  `v2/` is the sole current P01
+dataset definition; its generated images and previews are local-only.

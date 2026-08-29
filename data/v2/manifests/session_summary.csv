@@ -1,0 +1,6 @@
+session,images,objects,scene,source_old_sessions
+S01,28,38,light_lab_table,S01;S02;S03
+S02,60,133,curved_wood_desk,S01;S02;S03;S04;S05;S06
+S03,8,10,floor_tile,S06
+S04,18,29,simpsons_desk,S06
+S05,5,12,doll_desk,S06

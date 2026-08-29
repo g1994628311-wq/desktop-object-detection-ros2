@@ -1,0 +1,13 @@
+data/v2/images/P01/S03/P01_S03_HDP_0001.jpg
+data/v2/images/P01/S03/P01_S03_LAP_0001.jpg
+data/v2/images/P01/S03/P01_S03_LAP_0002.jpg
+data/v2/images/P01/S03/P01_S03_LAP_0003.jpg
+data/v2/images/P01/S03/P01_S03_LAP_0004.jpg
+data/v2/images/P01/S03/P01_S03_LAP_0005.jpg
+data/v2/images/P01/S03/P01_S03_MIX_0001.jpg
+data/v2/images/P01/S03/P01_S03_MIX_0002.jpg
+data/v2/images/P01/S05/P01_S05_LAP_0001.jpg
+data/v2/images/P01/S05/P01_S05_MIX_0002.jpg
+data/v2/images/P01/S05/P01_S05_MIX_0003.jpg
+data/v2/images/P01/S05/P01_S05_MIX_0004.jpg
+data/v2/images/P01/S05/P01_S05_MIX_0005.jpg

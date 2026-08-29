@@ -1,0 +1,4 @@
+split,sessions,images,objects,unique_object_instances
+train,S01;S02,88,171,7
+val,S04,18,29,4
+test,S03;S05,13,22,5

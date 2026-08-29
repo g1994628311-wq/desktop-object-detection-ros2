@@ -13,14 +13,14 @@ CLASSES = tuple((ROOT / "configs/classes.txt").read_text(encoding="utf-8-sig").s
 IMAGE_SUFFIXES = {".jpg", ".jpeg", ".png"}
 
 
-def inventory():
-    images = {p.relative_to(RAW).with_suffix(""): p for p in RAW.rglob("*") if p.suffix.lower() in IMAGE_SUFFIXES}
-    labels = {p.relative_to(LABELS).with_suffix(""): p for p in LABELS.rglob("*.txt")}
+def inventory(raw=RAW, labels_root=LABELS):
+    images = {p.relative_to(raw).with_suffix(""): p for p in raw.rglob("*") if p.suffix.lower() in IMAGE_SUFFIXES}
+    labels = {p.relative_to(labels_root).with_suffix(""): p for p in labels_root.rglob("*.txt")}
     return images, labels
 
 
-def validate(verbose: bool = True):
-    images, labels = inventory()
+def validate(verbose: bool = True, raw=RAW, labels_root=LABELS):
+    images, labels = inventory(raw, labels_root)
     errors: list[str] = []
     warnings: list[str] = []
     objects = Counter()
@@ -93,6 +93,8 @@ def validate(verbose: bool = True):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--quiet", action="store_true")
+    parser.add_argument("--curated", action="store_true", help="deprecated alias for V2")
+    parser.add_argument("--v2", action="store_true", help="validate data/v2/images/P01 and data/v2/labels/P01")
     args = parser.parse_args()
-    found_errors, _, _ = validate(not args.quiet)
+    found_errors, _, _ = validate(not args.quiet, ROOT / "data/v2/images/P01", ROOT / "data/v2/labels/P01") if (args.curated or args.v2) else validate(not args.quiet)
     raise SystemExit(1 if found_errors else 0)
