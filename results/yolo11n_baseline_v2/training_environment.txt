@@ -1,0 +1,17 @@
+Python: 3.12.13
+PyTorch: 2.13.0+cu130
+CUDA: 13.0
+Ultralytics: 8.4.131
+GPU: NVIDIA GeForce RTX 4060 Laptop GPU
+model: yolo11n.pt
+imgsz: 640
+batch: 16
+epochs_requested: 100
+epochs_completed: 69
+best_epoch: 49
+early_stopping: true
+training_time_seconds: 137.764
+run_dir: runs/detect/yolo11n_baseline_v2
+best.pt: runs/detect/yolo11n_baseline_v2/weights/best.pt
+last.pt: runs/detect/yolo11n_baseline_v2/weights/last.pt
+test_per_class_export_note: 首次正式 test 未完整保存逐类别指标；固定 best.pt、测试集与全部评估参数后，对同一 test split 重运行一次指标导出，未参与模型选择或超参数调整。
