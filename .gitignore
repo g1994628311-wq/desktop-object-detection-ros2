@@ -32,6 +32,14 @@ data/v2/images/
 data/v2/previews/
 data/v2/yolo/images/
 data/v2/yolo/labels/
+data/v3/user/images/
+data/v3/user/previews/
+data/v3/coco/images/
+data/v3/coco/previews/
+data/v3/yolo/images/
+data/v3/yolo/labels/
+data/v3/review/
+data/external/
 
 # ==============================
 # YOLO training outputs
@@ -71,5 +79,6 @@ ros2_ws/log/
 
 data/previews/
 results/yolo11n_baseline_v1/predictions/
+results/yolo11n_baseline_v2/predictions/
 
 data/labels_backup_*/

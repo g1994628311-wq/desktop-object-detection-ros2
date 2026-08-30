@@ -1,0 +1,6 @@
+﻿section,images,positive_images,negative_images,objects,laptop_instances,keyboard_instances,cup_instances,user_images,coco_images,unique_capture_sessions,unique_physical_instances
+USER,119,88,31,130,44,21,65,119,0,5,8
+COCO,150,150,0,1011,394,263,354,0,150,,
+COMBINED_TRAIN,238,,,1109,426,282,401,88,150,2,
+VAL,5,,,9,5,0,4,5,0,1,
+TEST,26,,,23,7,2,14,26,0,2,
