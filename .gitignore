@@ -89,3 +89,7 @@ data/yolo_dataset_final/labels/
 data/yolo_dataset_final/**/*.cache
 results/final_model_comparison/predictions/
 results/final_model_comparison/*annotation_preview*.jpg
+
+# Local Windows USB-camera validation captures and per-frame logs
+results/usb_camera_test/
+results/camera_debug/
