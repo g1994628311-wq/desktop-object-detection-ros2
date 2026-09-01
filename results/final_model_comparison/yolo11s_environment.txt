@@ -1,0 +1,22 @@
+date_started: 2026-08-31T22:45:57.234684+08:00
+date_ended: 2026-08-31T23:40:21.695828+08:00
+Python: 3.12.13
+PyTorch: 2.13.0+cu130
+CUDA: 13.0
+Ultralytics: 8.4.131
+GPU: NVIDIA GeForce RTX 4060 Laptop GPU
+driver: 591.74
+pretrained_weights: yolo11s.pt
+imgsz: 640
+batch: 16
+epochs_requested: 100
+epochs_completed: 38
+best_epoch: 18
+early_stopping: True
+seed: 42
+deterministic: True
+training_time_seconds: 3175.534
+run_dir: D:\codes\desktop-object-detection-ros2\runs\detect\yolo11s_final
+best.pt: D:\codes\desktop-object-detection-ros2\runs\detect\yolo11s_final\weights\best.pt
+best_size_mb: 18.278
+parameters: 9414735

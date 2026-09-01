@@ -1,0 +1,4 @@
+split,images,objects,mouse,keyboard,laptop,cup,headphones
+train,734,1157,242,217,238,241,219
+val,33,71,7,9,12,28,15
+test,179,413,86,164,42,83,38

@@ -1,0 +1,6 @@
+session,images,laptop_instances,keyboard_instances,cup_instances,negative_images,unique_laptop_instances,unique_keyboard_instances,unique_cup_instances,scene_description
+P02_S01,10,3,3,4,0,1,1,1,"light laboratory desk, Dell monitor, shared MacBook/full keyboard/black thermos"
+P02_S02,44,25,15,13,6,2,1,2,"wood-grain desk and bookshelf, shared laptops/compact keyboard/cups"
+P02_S03,6,0,1,1,4,0,1,1,"tiled floor capture with keyboard, mug, and hard negatives"
+P02_S04,5,3,0,2,0,1,0,1,distinct low-light room and dark wood/bed surface
+P02_S05,1,0,0,0,1,0,0,0,window-side folding table hard-negative capture

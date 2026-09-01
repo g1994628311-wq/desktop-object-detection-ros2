@@ -1,0 +1,60 @@
+{
+  "status": "passed",
+  "source_manifest_images": 948,
+  "images": 946,
+  "labels": 946,
+  "deduplicated_images": 2,
+  "objects": 1641,
+  "class_names": [
+    "mouse",
+    "keyboard",
+    "laptop",
+    "cup",
+    "headphones"
+  ],
+  "split_summary": [
+    {
+      "split": "train",
+      "images": 734,
+      "negative_images": 98,
+      "objects": 1157,
+      "mouse": 242,
+      "keyboard": 217,
+      "laptop": 238,
+      "cup": 241,
+      "headphones": 219
+    },
+    {
+      "split": "val",
+      "images": 33,
+      "negative_images": 0,
+      "objects": 71,
+      "mouse": 7,
+      "keyboard": 9,
+      "laptop": 12,
+      "cup": 28,
+      "headphones": 15
+    },
+    {
+      "split": "test",
+      "images": 179,
+      "negative_images": 0,
+      "objects": 413,
+      "mouse": 86,
+      "keyboard": 164,
+      "laptop": 42,
+      "cup": 83,
+      "headphones": 38
+    }
+  ],
+  "exact_duplicate_groups_after_deduplication": 0,
+  "cross_split_exact_duplicate_groups": 0,
+  "cross_split_dhash_distance_le_1_pairs": 0,
+  "transfer_modes": {
+    "hardlink": 1892
+  },
+  "split_policy": {
+    "P01_P03_P05": "preserve_v1_strict_split",
+    "P02_P04": "train_only_to_protect_held_out_evaluation"
+  }
+}

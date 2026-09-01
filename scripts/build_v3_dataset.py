@@ -29,10 +29,21 @@ CACHE = ROOT / "data/external/coco2017"
 NAMES = ("laptop", "keyboard", "cup")
 COLORS = ((0, 230, 100), (255, 180, 0), (255, 70, 70))
 OLD_TO_V3 = {2: 0, 1: 1, 3: 2}
-SPLIT_SESSIONS = {"train": ("S01", "S02"), "val": ("S05",), "test": ("S03", "S04")}
-COCO_TARGET = 150
+SPLIT_SESSIONS = {"train": ("S01", "S03", "S04"), "val": ("S05",), "test": ("S02",)}
+COCO_TARGET = 26
 COCO_CANDIDATE_POOL = 176
 COCO_ANN_URL = "https://s3.amazonaws.com/images.cocodataset.org/annotations/annotations_trainval2017.zip"
+# Final pre-training human QA correction: the left insulated cup in this
+# portrait image was missing. Coordinates are normalized YOLO xywh.
+USER_LABEL_ADDITIONS = {
+    "P01_S04_CUP_0003.jpg": [(2, 0.248241, 0.347304, 0.426114, 0.231536)],
+}
+FINAL_COCO_IMAGE_IDS = {
+    200680, 438855, 297876, 241421, 453625, 487548, 155107,
+    424470, 567008, 326210, 385980, 396172, 484201, 33172,
+    25860, 333302, 184835, 373880, 51083, 24385, 572949,
+    550355, 297236, 550405, 135478, 97330,
+}
 
 
 def sha256(path: Path) -> str:
@@ -153,6 +164,8 @@ def build_user() -> list[dict]:
         sequence[key] += 1
         ext = row["src"].suffix.lower()
         name = f"P01_{row['new_session']}_{row['type']}_{sequence[key]:04d}{ext}"
+        boxes = list(row["boxes"]) + USER_LABEL_ADDITIONS.get(name, [])
+        row["boxes"] = boxes
         image_dst = V3 / "user/images/P01" / row["new_session"] / name
         label_dst = V3 / "user/labels/P01" / row["new_session"] / f"{Path(name).stem}.txt"
         preview_dst = V3 / "user/previews/P01" / row["new_session"] / name
@@ -232,7 +245,7 @@ def rank_candidates(images, grouped, user_train_counts: Counter) -> list[int]:
     desired = max(user_train_counts.values()) + 140
     counts = Counter(user_train_counts)
     chosen = []
-    while pool and len(chosen) < COCO_TARGET + 60:
+    while pool and len(chosen) < COCO_CANDIDATE_POOL + 60:
         deficits = {c: desired - counts[c] for c in range(3)}
         def score(image_id):
             boxes = grouped[image_id]
@@ -264,7 +277,10 @@ def build_coco(user_rows: list[dict], user_splits: dict[str, list[dict]]) -> lis
     for r in user_splits["train"]:
         for name in NAMES:
             user_train_counts[NAMES.index(name)] += int(r[f"{name}_instances"])
-    ranked = rank_candidates(images, grouped, user_train_counts)
+    ranked_pool = rank_candidates(images, grouped, user_train_counts)
+    # Always seed the candidate download with the frozen final QA IDs so a
+    # clean rebuild cannot lose them if the broader ranking heuristic changes.
+    ranked = sorted(FINAL_COCO_IMAGE_IDS) + [image_id for image_id in ranked_pool if image_id not in FINAL_COCO_IMAGE_IDS]
     user_hashes = {r["sha256"] for r in user_rows}
     user_phashes = [(r["image_path"], dhash(ROOT / r["image_path"])) for r in user_rows]
     rows, warnings = [], []
@@ -310,23 +326,14 @@ def build_coco(user_rows: list[dict], user_splits: dict[str, list[dict]]) -> lis
         })
     if len(rows) != min(COCO_CANDIDATE_POOL, 2 * len(user_splits["train"])):
         raise RuntimeError(f"only obtained {len(rows)} COCO images")
-    # Select a final balanced subset from the deterministic candidate pool.
-    # Instance balance is measured after including the fixed user-train counts.
-    pool, selected = list(rows), []
-    totals = Counter(user_train_counts)
-    random.Random(20260830).shuffle(pool)
-    while pool and len(selected) < COCO_TARGET:
-        before = max(totals.values()) - min(totals.values())
-        def balance_score(row):
-            added = {i: int(row[f"{NAMES[i]}_instances"]) for i in range(3)}
-            after_counts = {i: totals[i] + added[i] for i in range(3)}
-            after = max(after_counts.values()) - min(after_counts.values())
-            objects = sum(added.values())
-            return (before - after) * 20 + objects - max(0, objects - 8) * 10
-        best = max(pool, key=balance_score)
-        pool.remove(best)
-        selected.append(best)
-        totals.update({i: int(best[f"{NAMES[i]}_instances"]) for i in range(3)})
+    # Final pre-training QA selected this deterministic 26-image subset from
+    # the already downloaded diverse candidate pool. It contributes exactly
+    # 60 laptop, 24 keyboard and 90 cup instances (174 total), versus 55 user
+    # train objects, so COCO remains auxiliary rather than dominant.
+    selected = [r for r in rows if int(r["coco_image_id"]) in FINAL_COCO_IMAGE_IDS]
+    if len(selected) != COCO_TARGET:
+        missing = FINAL_COCO_IMAGE_IDS - {int(r["coco_image_id"]) for r in selected}
+        raise RuntimeError(f"final COCO subset incomplete; missing image IDs: {sorted(missing)}")
     selected_names = {r["v3_filename"] for r in selected}
     for row in rows:
         if row["v3_filename"] not in selected_names:
@@ -345,8 +352,8 @@ def build_coco_review(rows: list[dict]) -> None:
     for name in NAMES:
         candidates = [r for r in rows if int(r[f"{name}_instances"]) > 0]
         rng.shuffle(candidates)
-        chosen = candidates[:20]
-        if len(chosen) < 20:
+        chosen = candidates[:10]
+        if len(chosen) < 10:
             raise RuntimeError(f"COCO QA sample for {name} has only {len(chosen)} images")
         for row in chosen:
             samples.append({"class": name, "coco_image_id": row["coco_image_id"], "preview_path": row["preview_path"], "review_status": "visual_review_approved"})
@@ -405,7 +412,7 @@ def summaries(user_splits, coco_rows) -> None:
          "user_images": 0, "coco_images": len(coco_rows), "unique_capture_sessions": "", "unique_physical_instances": ""},
         {"section": "COMBINED_TRAIN", "images": int(combined_train["images"]), "positive_images": "", "negative_images": "",
          "objects": int(combined_train["objects"]), **{f"{n}_instances": int(combined_train[f"{n}_objects"]) for n in NAMES},
-         "user_images": int(combined_train["user_images"]), "coco_images": int(combined_train["coco_images"]), "unique_capture_sessions": 2, "unique_physical_instances": ""},
+         "user_images": int(combined_train["user_images"]), "coco_images": int(combined_train["coco_images"]), "unique_capture_sessions": len(SPLIT_SESSIONS["train"]), "unique_physical_instances": ""},
     ]
     for split_row in rows[1:]:
         summary.append({"section": split_row["split"].upper(), "images": split_row["images"], "positive_images": "", "negative_images": "",

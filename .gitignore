@@ -82,3 +82,10 @@ results/yolo11n_baseline_v1/predictions/
 results/yolo11n_baseline_v2/predictions/
 
 data/labels_backup_*/
+
+# Final materialized training dataset and local experiment inspection outputs
+data/yolo_dataset_final/images/
+data/yolo_dataset_final/labels/
+data/yolo_dataset_final/**/*.cache
+results/final_model_comparison/predictions/
+results/final_model_comparison/*annotation_preview*.jpg

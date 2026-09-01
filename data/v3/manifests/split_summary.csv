@@ -1,4 +1,4 @@
 ﻿split,images,objects,laptop_objects,keyboard_objects,cup_objects,user_images,coco_images,sessions
-train,238,1109,426,282,401,88,150,S01;S02
+train,80,229,80,26,123,54,26,S01;S03;S04
 val,5,9,5,0,4,5,0,S05
-test,26,23,7,2,14,26,0,S03;S04
+test,60,67,19,19,29,60,0,S02
