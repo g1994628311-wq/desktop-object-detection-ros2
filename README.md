@@ -42,12 +42,21 @@ Data Collection
 
 ## Evaluation / Results
 
+Final model: YOLO11n
+
 Manual real-world evaluation: 20/20 objects correctly recognized
 Accuracy: 100%
 Requirement: >=80%
 Status: PASS
 
 This manual USB-camera acceptance result is distinct from held-out Test mAP, the YOLO11n / YOLO11s comparison, and USB Camera FPS. It records only the confirmed 20-object manual test and is not a claim of overall model accuracy.
+
+Jetson real-device deployment: PASS
+Jetson average FPS: 55 FPS
+Jetson requirement: >=5 FPS
+ROS2 real-device runtime: PASS
+
+For runnable entry points, see `scripts/`, `docs/ros2_detector_usage.md`, `docs/jetson_deployment.md`, and `docs/final_demo_guide.md`.
 
 ## Repository Structure
 
