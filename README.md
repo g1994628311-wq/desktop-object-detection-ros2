@@ -40,6 +40,15 @@ Data Collection
 -> ROS2 Publisher
 -> Final Evaluation
 
+## Evaluation / Results
+
+Manual real-world evaluation: 20/20 objects correctly recognized
+Accuracy: 100%
+Requirement: >=80%
+Status: PASS
+
+This manual USB-camera acceptance result is distinct from held-out Test mAP, the YOLO11n / YOLO11s comparison, and USB Camera FPS. It records only the confirmed 20-object manual test and is not a claim of overall model accuracy.
+
 ## Repository Structure
 
     configs/     Configuration files
