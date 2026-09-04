@@ -1,7 +1,15 @@
 #!/usr/bin/env python3
-"""Train and evaluate fixed YOLO11n/YOLO11s final five-class experiments."""
+"""训练并评估最终五分类 YOLO11n/YOLO11s 实验。
+
+本脚本演示 Transfer Learning（迁移学习）：从 COCO 预训练权重开始，
+再对 mouse、keyboard、laptop、cup、headphones 进行 Fine-tuning（微调）。
+"""
 from __future__ import annotations
 
+# ============================================================
+# 1. 依赖与统一路径：Path 管理文件；CSV/Markdown 保存实验记录；
+#    Ultralytics 将前向传播、loss、反向传播和 optimizer.step() 封装进 train()。
+# ============================================================
 import csv
 import os
 import platform
@@ -19,6 +27,9 @@ import torch
 import ultralytics
 from ultralytics import YOLO
 
+# ============================================================
+# 2. 固定数据、输出与类别配置。dataset.yaml 定义 Train/Val/Test 路径。
+# ============================================================
 DATA = ROOT / "data/yolo_dataset_final/dataset.yaml"
 DATA_ROOT = DATA.parent
 RUNS = ROOT / "runs/detect"
@@ -33,7 +44,7 @@ def unique_name(base: str) -> str:
     while (RUNS / f"{base}_{i}").exists(): i += 1
     return f"{base}_{i}"
 
-
+#读取中的所有 YOLO .txt 文件，然后统计每一类有多少个真实目标。
 def class_instances(split: str) -> Counter:
     counts = Counter()
     for path in (DATA_ROOT / "labels" / split).glob("*.txt"):
@@ -41,12 +52,16 @@ def class_instances(split: str) -> Counter:
             if line.strip(): counts[int(line.split()[0])] += 1
     return counts
 
-
+#评价模块，负责提取整体指标：
+#Precision
+#Recall
+#mAP50
+#mAP50-95
 def aggregate(metrics):
     b=metrics.box
     return {"precision":float(b.mp),"recall":float(b.mr),"mAP50":float(b.map50),"mAP50_95":float(b.map)}
 
-
+#统计每一类的指标
 def per_class(split: str, metrics):
     b=metrics.box; instances=class_instances(split); index={int(c):i for i,c in enumerate(b.ap_class_index)}
     rows=[]
@@ -55,13 +70,13 @@ def per_class(split: str, metrics):
         rows.append({"split":split,"class_id":cls,"class_name":name,"precision":"N/A" if i is None else float(b.p[i]),"recall":"N/A" if i is None else float(b.r[i]),"AP50":"N/A" if i is None else float(b.ap50[i]),"AP50_95":"N/A" if i is None else float(b.maps[cls]),"instances":instances[cls]})
     return rows
 
-
+#计算预测框和真实框的重叠程度
 def iou(a,b):
     x1,y1=max(a[0],b[0]),max(a[1],b[1]); x2,y2=min(a[2],b[2]),min(a[3],b[3])
     inter=max(0,x2-x1)*max(0,y2-y1); union=(a[2]-a[0])*(a[3]-a[1])+(b[2]-b[0])*(b[3]-b[1])-inter
     return inter/union if union else 0.0
 
-
+#错误分析
 def error_analysis(model, model_key: str):
     rows=[]; source=DATA_ROOT/"images/test"; label_dir=DATA_ROOT/"labels/test"
     for result in model.predict(source=str(source),imgsz=640,conf=.25,device=0,verbose=False,stream=True):
@@ -98,15 +113,24 @@ def driver():
 
 
 def train_one(model_key: str):
-    weight=f"{model_key}.pt"; run_name=unique_name(f"{model_key}_final")
+    """训练一个 n/s 模型并以 best.pt 做 Val/Test 评估。
+
+    epochs=100 是最多 100 个 Epoch（完整遍历训练集），patience=20 是
+    Early Stopping（早停）容忍轮数，因此训练不一定跑满 100 轮。best.pt 是
+    Validation 指标最佳权重；last.pt 仅是最后一轮权重。
+    """
+    weight=f"{model_key}.pt"; run_name=unique_name(f"{model_key}_final")#加载预训练权重，Ultralytics 封装好的训练接口
     started=datetime.now().astimezone(); clock=time.perf_counter(); model=YOLO(weight,task="detect")
     os.chdir(DATA_ROOT)
+    # model.train(): image -> resize/augmentation -> forward -> 与 Ground Truth 比较
+    # -> box/cls/dfl loss -> backward -> optimizer update。Batch=16，device=0 为 GPU。
     trained=model.train(data=str(DATA),project=str(RUNS),name=run_name,epochs=100,imgsz=640,batch=16,device=0,patience=20,seed=42,deterministic=True,pretrained=True,optimizer="auto",plots=True,save=True,workers=4,cache=False)
     training_seconds=time.perf_counter()-clock; run_dir=Path(trained.save_dir); best=run_dir/"weights/best.pt"
     if not best.exists(): raise RuntimeError(f"{model_key} missing best.pt")
     rows=list(csv.DictReader((run_dir/"results.csv").open(encoding="utf-8-sig")))
     best_epoch=max(range(len(rows)),key=lambda i:.1*float(rows[i]["metrics/mAP50(B)"])+.9*float(rows[i]["metrics/mAP50-95(B)"]))+1
     fixed=YOLO(str(best),task="detect")
+    # Validation 用于训练期间选择/早停；最终 Test 只在固定 best.pt 后评价，不能调参。
     val=fixed.val(data=str(DATA),split="val",imgsz=640,batch=16,device=0,workers=4,plots=True,project=str(run_dir),name="val_eval")
     test=fixed.val(data=str(DATA),split="test",imgsz=640,batch=16,device=0,workers=4,plots=True,project=str(run_dir),name="test_eval")
     val_a,test_a=aggregate(val),aggregate(test); pc=per_class("val",val)+per_class("test",test)
@@ -126,6 +150,7 @@ def train_one(model_key: str):
 
 
 def comparison(a,b):
+    """比较 nano(n，较快较小) 与 small(s，容量更大) 的整体和逐类指标。"""
     fields=("model","parameters","model_size_mb","precision","recall","mAP50","mAP50_95","best_epoch","training_time")
     with (RESULTS/"model_comparison.csv").open("w",newline="",encoding="utf-8") as f:
         w=csv.DictWriter(f,fieldnames=fields); w.writeheader()

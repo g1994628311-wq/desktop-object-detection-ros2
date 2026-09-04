@@ -1,0 +1,2 @@
+from setuptools import setup
+setup(name="desktop_object_detector", version="0.1.0", packages=["desktop_object_detector"], data_files=[("share/ament_index/resource_index/packages", ["resource/desktop_object_detector"]), ("share/desktop_object_detector/launch", ["launch/detector.launch.py"]), ("share/desktop_object_detector", ["package.xml"])], install_requires=["setuptools"], zip_safe=True, entry_points={"console_scripts": ["desktop_object_detector = desktop_object_detector.detector_node:main"]})

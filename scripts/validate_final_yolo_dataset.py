@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Read-only validation and statistics for data/yolo_dataset_final."""
+"""训练前 Dataset Validation（数据集验证），不执行模型推理。
+
+检查 images/labels 的一一对应、YOLO normalized 标签、类别 ID、bbox 边界及
+Train/Val/Test 的 filename/session 泄露，避免错误数据进入 Training。
+"""
 from __future__ import annotations
 
 import csv
@@ -10,6 +14,9 @@ from pathlib import Path
 
 from PIL import Image
 
+# ============================================================
+# 1. 数据集路径：images/{train,val,test} 与 labels/{train,val,test} 必须配对。
+# ============================================================
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "data/yolo_dataset_final"
 NAMES = ("mouse", "keyboard", "laptop", "cup", "headphones")
@@ -17,6 +24,9 @@ EXTENSIONS = {".jpg", ".jpeg", ".png", ".bmp", ".webp"}
 
 
 def main() -> int:
+    """执行只读 QA；YOLO 每行是 class_id x_center y_center width height（0~1），
+    不是像素 xyxy。BBox 由 center ± width/height/2 检查，微小越界也须修复。
+    """
     errors: list[str] = []
     rows = []
     split_stems: dict[str, set[str]] = {}
@@ -26,6 +36,7 @@ def main() -> int:
         images = {p.stem: p for p in image_dir.iterdir() if p.suffix.lower() in EXTENSIONS}
         labels = {p.stem: p for p in label_dir.glob("*.txt")}
         split_stems[split] = set(images)
+        # Missing label 是图片无标注；Orphan label 是 txt 找不到对应图片。
         for stem in sorted(set(images) - set(labels)): errors.append(f"missing label: {split}/{stem}")
         for stem in sorted(set(labels) - set(images)): errors.append(f"orphan label: {split}/{stem}")
         counts = Counter()
@@ -45,6 +56,7 @@ def main() -> int:
                 try: cls = int(parts[0]); x, y, w, h = map(float, parts[1:])
                 except ValueError:
                     errors.append(f"{label}:{number}: non-numeric value"); continue
+                # 五类 ID 固定 0..4；非法 ID 或 bbox 超出 [0,1] 都会污染训练。
                 if cls not in range(5): errors.append(f"{label}:{number}: invalid class {cls}")
                 if not (0 <= x <= 1 and 0 <= y <= 1 and 0 < w <= 1 and 0 < h <= 1): errors.append(f"{label}:{number}: invalid normalized values")
                 if x-w/2 < -1e-6 or y-h/2 < -1e-6 or x+w/2 > 1+1e-6 or y+h/2 > 1+1e-6: errors.append(f"{label}:{number}: bbox outside image")
@@ -54,7 +66,7 @@ def main() -> int:
         overlap=split_stems[a]&split_stems[b]
         if overlap: errors.append(f"filename overlap {a}/{b}: {len(overlap)}")
 
-    # If contributor/session naming is present, enforce session isolation.
+    # Session Leakage：连续采集图可能共享背景/光照/物体，跨 split 会造成数据泄露。
     session_split = {}
     for split, stems in split_stems.items():
         for stem in stems:

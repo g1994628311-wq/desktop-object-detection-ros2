@@ -1,4 +1,8 @@
-"""Windows USB-camera qualitative and pipeline-performance validation for final YOLO11n."""
+"""Windows USB-camera Inference（推理）与 Pipeline FPS（整条处理链路）验证。
+
+只加载 best.pt，不更新任何参数。USB 2.0 Camera 固定为 index=1、DSHOW；采用
+Single Open，避免 probe/release/reopen 导致外接摄像头第二次打开失败。
+"""
 
 from __future__ import annotations
 
@@ -21,6 +25,7 @@ RESOLUTIONS = ((640, 480), (1280, 720), (1920, 1080))
 
 
 def parse_args() -> argparse.Namespace:
+    """argparse 让模型、camera、imgsz、Confidence、IoU、device 和输出可复现实验。"""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--model", default="runs/detect/yolo11n_final/weights/best.pt")
     parser.add_argument("--camera", type=int, default=1, help="Fixed USB camera index (default: 1)")
@@ -143,6 +148,11 @@ def make_video_writer(output_dir: Path, frame: Any, fps: float) -> tuple[cv2.Vid
 
 
 def main() -> int:
+    """Camera frame -> preprocess -> YOLO -> bbox/class/confidence -> NMS -> display/log。
+
+    前 30 帧是 Warm-up，不计 benchmark；300 帧平均比单帧 FPS 更稳定。Pipeline FPS
+    包含采集、推理后处理和绘制，区别于仅网络的 inference ms。
+    """
     args = parse_args()
     print_test_plan()
     model_path = Path(args.model)
@@ -159,6 +169,7 @@ def main() -> int:
         from ultralytics import YOLO
     except Exception as error:
         raise RuntimeError(f"Ultralytics cannot be imported: {error}") from error
+    # 加载训练好的权重仅用于 Inference；device=0 代表 NVIDIA GPU 0。
     model = YOLO(str(model_path))
     names = normalize_names(model.names)
     print(f"Model names: {names}")
@@ -207,6 +218,7 @@ def main() -> int:
                 continue
             consecutive_read_failures = 0
             timestamp = time.time()
+            # 直接传入 cap.read() 的 BGR frame，避免 model.predict(source=1) 双重占用摄像头。
             result = model.predict(frame, imgsz=args.imgsz, conf=args.conf, iou=args.iou, device=args.device, verbose=False)[0]
             detections = []
             for box in result.boxes:

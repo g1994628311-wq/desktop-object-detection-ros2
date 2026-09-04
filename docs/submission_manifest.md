@@ -1,5 +1,23 @@
 # Submission Manifest
 
+## 1. Dataset
+Final dataset directory and manifests are under `data/`.
+
+## 2. Model
+Final course package must include `runs/detect/yolo11n_final/weights/best.pt`; it is not uploaded to GitHub.
+
+## 3. Program
+Training, validation, USB inference, Jetson utilities and ROS2 source.
+
+## 4. Result Video
+PENDING RECORDING.
+
+## 5. Run Instructions
+README, `docs/ros2_detector_usage.md` and `docs/jetson_deployment.md`.
+
+## 6. Experiment Report
+`docs/experiment1_report.md`.
+
 ## A. Source Code
 Training, validation, USB inference, Jetson utilities and ROS2 package are under `scripts/` and `ros2_ws/src/`.
 
